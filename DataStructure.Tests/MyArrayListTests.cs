@@ -4,38 +4,48 @@ using System;
 
 namespace DataStructure.Tests
 {
-    public class MyArrayListTests
+    public class ArrayListTests : MyArrayListTests<MyArrayListHelper<int>>
     {
+        public override IList<int> CreateList(int[] sourceArray)
+        {
+            return new MyArrayListHelper<int>(sourceArray);
+        }
+    }
+
+    public abstract class MyArrayListTests<T> where T : IList<int>
+    {
+        public abstract IList<int> CreateList(int[] sourceArray);
+
         [Test]
         public void ArrayConstructor_WhenNullPassed_ShouldThrowArgumentException()
         {
             Assert.Throws<ArgumentException>(() =>
             {
-                MyArrayListHelper myArrayList = new MyArrayListHelper(null);
+                var myArrayList = CreateList(null);
             });
         }
 
-        [TestCase(new int[] { }, 0, 20, new int[] { 20 })]
-        [TestCase(new int[] { 23 }, 1, -1, new int[] { 23, -1 })]
-        [TestCase(new int[] { 30, -99, 2, 10 }, 2, 321, new int[] { 30, -99, 321, 2, 10 })]
-        [TestCase(new int[] { 0, 23, -112, 5 }, 4, 15, new int[] { 0, 23, -112, 5, 15 })]
-        public void Indexer_WhenAddOneValue_ShouldAddValueByIndex
+        [TestCase(new int[] { 23 }, 0, -1, new int[] { -1 })]
+        [TestCase(new int[] { 30, -99, 2, 10 }, 2, 321, new int[] { 30, -99, 321, 10 })]
+        [TestCase(new int[] { 0, 23, -112, 5 }, 3, 15, new int[] { 0, 23, -112, 15 })]
+        public void IndexerSet_WhenValidIndex_ShouldAddValueByIndex
             (int[] sourceArray, int index, int valueToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList[index] = valueToAdd;
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
+        [TestCase(new int[] { }, 0, 20)]
         [TestCase(new int[] {  }, 2, -5)]
         [TestCase(new int[] { 99 }, -1, -1)]
         [TestCase(new int[] { 0, -9, 232, 15 }, 5, 321)]
-        public void Indexer_WhenAddOneValue_ShouldThrowArgumentException
+        public void IndexerSet_WhenInvalidIndex_ShouldThrowArgumentException
             (int[] sourceArray, int index, int valueToAdd)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<ArgumentException>(() =>
             {
@@ -49,14 +59,14 @@ namespace DataStructure.Tests
             new int[] { 229, -404, 63, -47, -216, 15 })]
         [TestCase(new int[] { 334, -234, 99, -54, -731 }, -2, 
             new int[] { 334, -234, 99, -54, -731, -2 })]
-        public void AddBack_WhenAddOneValue_ShouldAddValueToTheEnd
+        public void AddBack_WhenCalled_ShouldAddValueToTheEnd
             (int[] sourceArray, int valueToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddBack(valueToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, new int[] { -5 }, new int[] { -5 })]
@@ -67,11 +77,11 @@ namespace DataStructure.Tests
         public void AddBack_WhenAddByIEnumerator_ShouldAddValuesToTheEnd
             (int[] sourceArray, int[] valuesToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddBack(valuesToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] {  }, 3,  new int[] { 3, 3 })]
@@ -80,15 +90,15 @@ namespace DataStructure.Tests
             new int[] { 229, -404, 63, -47, -216, 1, 1 })]
         [TestCase(new int[] { 334, -234, 99, -54, -731 }, -23,
             new int[] { 334, -234, 99, -54, -731, -23, -23 })]
-        public void AddBack_WhenAddTwoValues_ShouldAddValuesToTheEnd
+        public void AddBack_WhenCalled_ShouldAddValuesToTheEnd
             (int[] sourceArray, int valueToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddBack(valueToAdd);
             myArrayList.AddBack(valueToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, 0, -5, new int[] { -5 })]
@@ -103,11 +113,11 @@ namespace DataStructure.Tests
         public void AddByIndex_WhenIndexGreaterThanZero_ShouldAddValueByIndex
             (int[] sourceArray, int index, int valueToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddByIndex(index, valueToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, -1, 20)]
@@ -117,14 +127,12 @@ namespace DataStructure.Tests
         public void AddByIndex_WhenIndexIsOutOfArray_ShouldThrowArgumentException
             (int[] sourceArray, int index, int valueToAdd)
         {
-            {
-                var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
-                Assert.Throws<ArgumentException>(() =>
-                {
-                    myArrayList.AddByIndex(index, valueToAdd);
-                });
-            }
+            Assert.Throws<ArgumentException>(() =>
+            {
+                myArrayList.AddByIndex(index, valueToAdd);
+            });
         }
 
         [TestCase(new int[] { }, 0, new int[] { -5 }, new int[] { -5 })]
@@ -136,11 +144,11 @@ namespace DataStructure.Tests
         public void AddByIndex_WhenIndexAddIEnumerator_ShouldAddValuesByIndex
             (int[] sourceArray, int index, int[] valuesToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddByIndex(index, valuesToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, -20, new int[] { -20 })]
@@ -149,14 +157,14 @@ namespace DataStructure.Tests
             new int[] { -21, 331, 20, -19, 132, -2 })]
         [TestCase(new int[] { 555, -1, 23, -540, -456 }, 99,
             new int[] { 99, 555, -1, 23, -540, -456 })]
-        public void AddFront_WhenAddOneValue_ShouldAddValueInTheFront
+        public void AddFront_WhenValidIndex_ShouldAddValueInTheFront
             (int[] sourceArray, int valueToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddFront(valueToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, 11, new int[] { 11, 11 })]
@@ -168,12 +176,12 @@ namespace DataStructure.Tests
         public void AddFront_WhenAddTwoValues_ShouldAddValuesInTheFront
             (int[] sourceArray, int valueToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddFront(valueToAdd);
             myArrayList.AddFront(valueToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] {  }, new int[] {  } , new int[] {  })]
@@ -187,11 +195,11 @@ namespace DataStructure.Tests
         public void AddFront_WhenAddIEnumerator_ShouldAddValuesInTheFront
             (int[] sourceArray, int[] valuesToAdd, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.AddFront(valuesToAdd);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { -12 }, -12, 0)]
@@ -203,7 +211,7 @@ namespace DataStructure.Tests
         public void IndexOf_WhenIndexIsValid_ShouldFindIndexOfElement
             (int[] sourceArray, int element, int expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.IndexOf(element);
 
@@ -218,7 +226,7 @@ namespace DataStructure.Tests
         public void Max_WhenNoInput_ShouldFindMaxElement
             (int[] sourceArray, int expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.Max();
 
@@ -233,7 +241,7 @@ namespace DataStructure.Tests
         public void MaxIndex_WhenNoInput_ShouldFindMaxIndex
             (int[] sourceArray, int expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.MaxIndex();
 
@@ -244,7 +252,7 @@ namespace DataStructure.Tests
         public void MaxIndex_WhenEmptyArray_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -260,7 +268,7 @@ namespace DataStructure.Tests
         public void Min_WhenNoInput_ShouldFindMinElement
             (int[] sourceArray, int expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.Min();
 
@@ -275,7 +283,7 @@ namespace DataStructure.Tests
         public void MinIndex_WhenNoInput_ShouldFindMinIndex
             (int[] sourceArray, int expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.MinIndex();
 
@@ -286,7 +294,7 @@ namespace DataStructure.Tests
         public void MinIndex_WhenEmptyArray_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -303,19 +311,19 @@ namespace DataStructure.Tests
         public void RemoveBack_WhenRemoveOneValue_ShouldRemoveValueFromTheEnd
             (int[] sourceArray, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveBack();
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { })]
         public void RemoveBack_WhenLessThenOneIndex_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -332,20 +340,20 @@ namespace DataStructure.Tests
         public void RemoveBack_WhenRemoveTwoValues_ShouldRemoveValueFromTheEnd
             (int[] sourceArray, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveBack();
             actual = myArrayList.RemoveBack();
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { 2 })]
         public void RemoveBack_WhenOneIndex_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -365,12 +373,12 @@ namespace DataStructure.Tests
         public void RemoveByIndex_WhenIndexIsValid_ShouldRemoveElement
             (int[] sourceArray, int index, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveByIndex(index);
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, 0)]
@@ -381,7 +389,7 @@ namespace DataStructure.Tests
         public void RemoveByIndex_WhenInvalidIndex_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray, int index)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -401,12 +409,12 @@ namespace DataStructure.Tests
         public void RemoveByValue_WhenArrayContainsValue_ShouldRemoveElement
             (int[] sourceArray, int value, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveByValue(value);
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { 2 }, 2, 1, new int[] {  })]
@@ -422,12 +430,12 @@ namespace DataStructure.Tests
         public void RemoveByValueAll_WhenArrayContainsValue_ShouldRemoveElements
             (int[] sourceArray, int value, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveByValueAll(value);
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { -5 }, -5, new int[] { })]
@@ -439,19 +447,19 @@ namespace DataStructure.Tests
         public void RemoveFront_WhenRemoveOneValue_ShouldRemoveValueFromTheFront
             (int[] sourceArray, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveFront();
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { })]
         public void RemoveFront_WhenLessThenOneIndex_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -468,20 +476,20 @@ namespace DataStructure.Tests
         public void RemoveFront_WhenRemoveTwoValues_ShouldRemoveValueFromTheFront
             (int[] sourceArray, int expectedInt, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             int actual = myArrayList.RemoveFront();
             actual = myArrayList.RemoveFront();
 
             Assert.AreEqual(expectedInt, actual);
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { 2 })]
         public void RemoveFront_WhenOneIndex_ShouldThrowIndexOutOfRangeException
             (int[] sourceArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<IndexOutOfRangeException>(() =>
             {
@@ -500,11 +508,11 @@ namespace DataStructure.Tests
         public void RemoveNValuesBack_WhenNNotLessThenZero_ShouldRemoveValuesFromTheEnd
             (int[] sourceArray, int n, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.RemoveNValuesBack(n);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, 1)]
@@ -514,7 +522,7 @@ namespace DataStructure.Tests
         public void RemoveNValuesBack_WhenNLessThenZeroOrBiggerThanArray_ShouldThrowArgumentException
             (int[] sourceArray, int n)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<ArgumentException>(() =>
             {
@@ -531,12 +539,12 @@ namespace DataStructure.Tests
         public void RemoveNValuesBack_WhenRemoveTwoTimes_ShouldRemoveValuesFromTheEnd
             (int[] sourceArray, int n, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.RemoveNValuesBack(n);
             myArrayList.RemoveNValuesBack(n);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { -12 }, 0, 1, new int[] { })]
@@ -550,11 +558,11 @@ namespace DataStructure.Tests
         public void RemoveNValuesByIndex_WhenIndexIsValid_ShouldRemoveElementsWithThisIndex
             (int[] sourceArray, int index, int n, int[] expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.RemoveNValuesByIndex(index, n);
 
-            CollectionAssert.AreEqual(expected, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expected, myArrayList);
         }
 
         [TestCase(new int[] { 1 }, 0, 5)]
@@ -564,7 +572,7 @@ namespace DataStructure.Tests
         public void RemoveNValuesByIndex_WhenInvalidN_ShouldThrowArgumentException
             (int[] sourceArray, int index, int n)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<ArgumentException>(() =>
             {
@@ -584,11 +592,11 @@ namespace DataStructure.Tests
         public void RemoveNValuesFront_WhenRemoveOneTime_ShouldRemoveValuesFromTheFront
             (int[] sourceArray, int n, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.RemoveNValuesFront(n);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, 3)]
@@ -598,7 +606,7 @@ namespace DataStructure.Tests
         public void RemoveNValuesFront_WhenInvalidIndex_ShouldThrowArgumentException
             (int[] sourceArray, int n)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             Assert.Throws<ArgumentException>(() =>
             {
@@ -615,12 +623,12 @@ namespace DataStructure.Tests
         public void RemoveNValuesFront_WhenRemoveTwoValues_ShouldRemoveValueFromTheFront
             (int[] sourceArray, int n, int[] expectedArray)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.RemoveNValuesFront(n);
             myArrayList.RemoveNValuesFront(n);
 
-            CollectionAssert.AreEqual(expectedArray, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expectedArray, myArrayList);
         }
 
         [TestCase(new int[] { }, new int[] { })]
@@ -634,11 +642,11 @@ namespace DataStructure.Tests
         public void Reverse_WhenArrayIsRandom_ShouldReverseArray
             (int[] sourceArray, int[] expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.Reverse();
 
-            CollectionAssert.AreEqual(expected, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expected, myArrayList);
         }
 
         [TestCase(new int[] { 2 }, false,
@@ -656,11 +664,11 @@ namespace DataStructure.Tests
         public void Sort_WhenArrayIsRandom_ShouldSortArrayByAscending
             (int[] sourceArray, bool ascending, int[] expected)
         {
-            var myArrayList = new MyArrayListHelper(sourceArray);
+            var myArrayList = CreateList(sourceArray);
 
             myArrayList.Sort(ascending);
 
-            CollectionAssert.AreEqual(expected, myArrayList.ToArray());
+            CollectionAssert.AreEqual(expected, myArrayList);
         }
     }
 }
