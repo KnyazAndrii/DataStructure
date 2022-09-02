@@ -21,7 +21,7 @@ namespace DataStructuresLibrary
             {
                 if (index < 0 || index >= Length)
                 {
-                    throw new IndexOutOfRangeException();
+                    throw new ArgumentException();
                 }
 
                 return _array[index];
@@ -63,17 +63,6 @@ namespace DataStructuresLibrary
             }
 
             _count = array.Length;
-        }
-
-        public T[] ToArray()
-        {
-            T[] result = new T[Length];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = _array[i];
-            }
-
-            return result;
         }
  
         public void AddBack(T itemToAdd)

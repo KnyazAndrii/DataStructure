@@ -12,6 +12,14 @@ namespace DataStructure.Tests
         }
     }
 
+    public class LinkedListTests : MyArrayListTests<MyLinkedListHelper<int>>
+    {
+        public override IList<int> CreateList(int[] sourceArray)
+        {
+            return new MyLinkedListHelper<int>(sourceArray);
+        }
+    }
+
     public abstract class MyArrayListTests<T> where T : IList<int>
     {
         public abstract IList<int> CreateList(int[] sourceArray);
@@ -108,8 +116,8 @@ namespace DataStructure.Tests
             new int[] { 229, -404, 63, 15, -47, -216 })]
         [TestCase(new int[] { 334, -234, 99, -54, -731 }, 5, -2,
             new int[] { 334, -234, 99, -54, -731, -2 })]
-        [TestCase(new int[] { -345, 4, 34, -999, -504, -622 }, 0, -345,
-            new int[] { -345, -345, 4, 34, -999, -504, -622 })]
+        [TestCase(new int[] { -345, 4, 34, -999, -504, -622 }, 0, 345,
+            new int[] { 345, -345, 4, 34, -999, -504, -622 })]
         public void AddByIndex_WhenIndexGreaterThanZero_ShouldAddValueByIndex
             (int[] sourceArray, int index, int valueToAdd, int[] expectedArray)
         {
@@ -204,7 +212,7 @@ namespace DataStructure.Tests
 
         [TestCase(new int[] { -12 }, -12, 0)]
         [TestCase(new int[] { 3, -34, 219, -5, 31 }, 34, -1)]
-        [TestCase(new int[] { 334, -234, 99, -54, -731 }, 334, 0)]
+        [TestCase(new int[] { 334, -234, 99, -54, 334 }, 334, 0)]
         [TestCase(new int[] { 331, 20, -19, 132, -2 }, 1, -1)]
         [TestCase(new int[] { 229, -404, 63, -47, -216 }, -47, 3)]
         [TestCase(new int[] { 4, 34, -999, -504, -622 }, -622, 4)]
@@ -223,7 +231,7 @@ namespace DataStructure.Tests
         [TestCase(new int[] { -109, 23 }, 23)]
         [TestCase(new int[] { -457, 500, 20, -4, 37 }, 500)]
         [TestCase(new int[] { 470, -300, 470, -39, 5, 470 }, 470)]
-        public void Max_WhenNoInput_ShouldFindMaxElement
+        public void Max_WhenValidArray_ShouldFindMaxElement
             (int[] sourceArray, int expected)
         {
             var myArrayList = CreateList(sourceArray);
@@ -238,7 +246,7 @@ namespace DataStructure.Tests
         [TestCase(new int[] { -109, 23 }, 1)]
         [TestCase(new int[] { -457, 20, 500, -4, 37 }, 2)]
         [TestCase(new int[] { 470, -300, 470, -39, 5, 470 }, 0)]
-        public void MaxIndex_WhenNoInput_ShouldFindMaxIndex
+        public void MaxIndex_WhenValidArray_ShouldFindMaxIndex
             (int[] sourceArray, int expected)
         {
             var myArrayList = CreateList(sourceArray);
@@ -650,15 +658,15 @@ namespace DataStructure.Tests
         }
 
         [TestCase(new int[] { 2 }, false,
-            new int[] { 2 })]//
+            new int[] { 2 })]
         [TestCase(new int[] { -142, -331 }, true,
-            new int[] { -331, -142 })]//
+            new int[] { -331, -142 })]
         [TestCase(new int[] { 67, 67 }, true,
             new int[] { 67, 67 })]
         [TestCase(new int[] { 339, -423, 48, -14, 339 }, false,
             new int[] { 339, 339, 48, -14, -423 })]
         [TestCase(new int[] { -12, 294, 166, 41 }, true,
-            new int[] { -12, 41, 166, 294 })]//
+            new int[] { -12, 41, 166, 294 })]
         [TestCase(new int[] { 2, 2, 2, 2, 2 }, true,
             new int[] { 2, 2, 2, 2, 2 })]
         public void Sort_WhenArrayIsRandom_ShouldSortArrayByAscending
