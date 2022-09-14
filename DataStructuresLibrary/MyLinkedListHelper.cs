@@ -380,77 +380,55 @@ namespace DataStructuresLibrary
 
         public void Reverse()
         {
-            T element;
+            int length = Length;
+            T[] element = new T[Length];
 
-            for (int i = 0; i < Length; i++)
+            for (int i = 0; i < length; i++)
             {
-                element = RemoveBack();
-                AddFront(element);
+                element[i] = RemoveBack();
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                AddBack(element[i]);
             }
         }
 
         public void Sort(bool ascending = true)
         {
-            Action<bool> ascendingAct;
-            if (ascending)
-            {
-                ascendingAct = Min;
-            }
-            else
-            {
-                ascendingAct = Max;
-            }
-
             int length = Length;
             T[] array = new T[length];
 
-            for (int i = 0; i < length; i++)
+            if (ascending)
             {
-                T num = ascendingAct;
+                for (int i = 0; i < length; i++)
+                {
+                    T min = Min();
 
-                RemoveByValue(num);
-                array[i] = num;
+                    RemoveByValue(min);
+                    array[i] = min;
+                }
+
+                for (int i = 0; i < length; i++)
+                {
+                    AddBack(array[i]);
+                }
             }
-
-            for (int i = 0; i < length; i++)
+            else
             {
-                AddBack(array[i]);
+                for (int i = 0; i < length; i++)
+                {
+                    T max = Max();
+
+                    RemoveByValue(max);
+                    array[i] = max;
+                }
+
+                for (int i = 0; i < length; i++)
+                {
+                    AddBack(array[i]);
+                }
             }
-
-
-            //int length = Length;
-            //T[] array = new T[length];
-
-            //if (ascending)
-            //{
-            //    for (int i = 0; i < length; i++)
-            //    {
-            //        T min = Min();
-
-            //        RemoveByValue(min);
-            //        array[i] = min;
-            //    }
-
-            //    for (int i = 0; i < length; i++)
-            //    {
-            //        AddBack(array[i]);
-            //    }
-            //}
-            //else
-            //{
-            //    for (int i = 0; i < length; i++)
-            //    {
-            //        T max = Max();
-
-            //        RemoveByValue(max);
-            //        array[i] = max;
-            //    }
-
-            //    for (int i = 0; i < length; i++)
-            //    {
-            //        AddBack(array[i]);
-            //    }
-            //}
         }
 
         public IEnumerator<T> GetEnumerator()
